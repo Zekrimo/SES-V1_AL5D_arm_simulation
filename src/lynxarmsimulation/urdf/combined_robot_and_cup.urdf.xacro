@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="combined_robot_and_cup">
+  <!-- Include lynxmotion_arm.urdf.xacro -->
+  <xacro:include filename="$(find lynxarmsimulation)/urdf/lynxmotion_arm.urdf.xacro"/>
+
+  <!-- Include cup.urdf.xacro -->
+  <xacro:include filename="$(find lynxarmsimulation)/urdf/cup.urdf.xacro"/>
+  
+  <!-- Define a fixed joint to position the cup in the world -->
+  <joint name="world_to_cup_joint" type="fixed">
+    <parent link="world"/>
+    <child link="cup_base_link"/>
+    <origin xyz="0.5 0 0" rpy="0 0 0"/> <!-- Adjust as needed -->
+  </joint>
+</robot>

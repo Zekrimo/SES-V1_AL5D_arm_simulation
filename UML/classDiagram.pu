@@ -1,0 +1,103 @@
+@startuml
+
+package lynxarmsimulation {
+class ArmStatePublisher {
+        - defaultTimeMs : int
+        - armStateMsg : sensor_msgs::msg::JointState
+        - debug : bool
+        - emergencyStop : bool
+        - _tf2StaticBroadcaster_ : tf2_ros::StaticTransformBroadcaster
+        - _armStatePublisher : rclcpp::Publisher<sensor_msgs::msg::JointState>::SharedPtr
+        - _serialMessageSubscriber : rclcpp::Subscription<std_msgs::msg::String>::SharedPtr
+        - _timer : rclcpp::TimerBase::SharedPtr
+        - joints : std::map<int, double>
+        
+        + ArmStatePublisher()
+        + ~ArmStatePublisher()
+        + publishArmState() : void
+        + build_arm_state_msg(message : std_msgs::msg::String::SharedPtr) : void
+        + buildWorld() : void
+        + buildJointsMap() : void
+        + buildCup() : void
+        + buildArm() : void
+        + getJointName(servoID : JointNames) : std::string
+        + setJointState(servoID : int, position : double, duration : int) : bool
+        + convertPwmToRadian(PulseWidth : u_int16_t, minDegree : u_int16_t, maxDegree : u_int16_t) : double
+        + recieveSerialMessage(message : std_msgs::msg::String::SharedPtr) : void
+        + parseCommand(command : std::string) : std::map<std::string, int>
+        + handleEmergencyStop(command : std::string) : bool
+    }
+    
+    enum JointNames {
+        BASE_LINK2TURRET
+        TURRET2UPPERARM
+        UPPERARM2FOREARM
+        FOREARM2WRIST
+        WRIST2HAND
+        GRIPPER_LEFT2HAND
+        GRIPPER_RIGHT2HAND
+    }
+}
+
+package cupsimulation {
+ class CupStatePublisher {
+        - _fallSpeed : double
+        - _groundLevel : double
+        - _startXpos : double
+        - _startYpos : double
+        - _tf2Broadcaster : std::unique_ptr<tf2_ros::TransformBroadcaster>
+        - _cupSubscriber : rclcpp::Subscription<geometry_msgs::msg::TransformStamped>::SharedPtr
+        - _timer : rclcpp::TimerBase::SharedPtr
+        - _cupPoseMsg : geometry_msgs::msg::TransformStamped
+        - _cupSubscriber : rclcpp::Subscription<geometry_msgs::msg::TransformStamped>::SharedPtr 
+        - _state : State
+        
+        + CupStatePublisher()
+        + ~CupStatePublisher()
+        + publishCupState() : void
+        + initCupPoseMsg() : void
+        + handleCup(msg : geometry_msgs::msg::TransformStamped) : void
+        + setCupPoseMsg(msg : geometry_msgs::msg::TransformStamped) : void
+        + affectCupByGravitationalForce() : void
+    }
+    
+    enum State {
+        IDLE
+        FALLING
+        GRABBED
+    }
+
+ class CupStateSubscriber {
+        - _debug : bool
+        - _positivePickupMargin : double
+        - _negativePickupMargin : double
+        - _timer : rclcpp::TimerBase::SharedPtr
+        - _tf2Listener : std::shared_ptr<tf2_ros::TransformListener>
+        - _cupStatePublisher : rclcpp::Publisher<geometry_msgs::msg::TransformStamped>::SharedPtr
+        - _tf2Buffer : std::shared_ptr<tf2_ros::Buffer>
+        
+        + CupStateSubscriber()
+        + ~CupStateSubscriber()
+        + timerTriggered() : void
+        + isCupInGrip(transform : geometry_msgs::msg::TransformStamped) : bool
+    }
+}
+
+package commandpublisher {
+    class Demo {
+        - debug : bool
+        - _serialMessagePublisher : rclcpp::Publisher<std_msgs::msg::String>::SharedPtr
+        - _timer : rclcpp::TimerBase::SharedPtr
+        - initDefaultPose() : void
+        - sendSerialMessage(message : std::string) : void
+        - sendTestMessage() : void
+        
+        + Demo(const rclcpp::NodeOptions & options)
+        + ~Demo()
+        + processSerialMessage() : void
+
+    }
+}
+
+
+@enduml
