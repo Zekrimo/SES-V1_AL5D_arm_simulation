@@ -15,7 +15,7 @@ To install the simulation, follow these steps:
 
 1. Clone this repository to your ROS workspace:
     ```bash
-    git clone https://bitbucket.aimsites.nl/scm/~shg.selten_student.han.nl/lynxmotionarm_simulation.git
+    git clone https://github.com/Zekrimo/SES-V1_AL5D_arm_simulation.git
     ```
 
 2. Build the workspace:
